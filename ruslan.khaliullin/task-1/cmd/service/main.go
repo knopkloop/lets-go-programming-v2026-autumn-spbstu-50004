@@ -3,16 +3,18 @@ package main
 import "fmt"
 
 func main() {
-	var n1, n2 int
-	var op string
+	var (
+		a, b int
+		op   string
+	)
 
-	_, err := fmt.Scan(&n1)
+	_, err := fmt.Scan(&a)
 	if err != nil {
 		fmt.Println("Invalid first operand")
 		return
 	}
 
-	_, err = fmt.Scan(&n2)
+	_, err = fmt.Scan(&b)
 	if err != nil {
 		fmt.Println("Invalid second operand")
 		return
@@ -26,17 +28,17 @@ func main() {
 
 	switch op {
 	case "+":
-		fmt.Println(n1 + n2)
+		fmt.Println(a + b)
 	case "-":
-		fmt.Println(n1 - n2)
+		fmt.Println(a - b)
 	case "*":
-		fmt.Println(n1 * n2)
+		fmt.Println(a * b)
 	case "/":
-		if n2 == 0 {
+		if b == 0 {
 			fmt.Println("Division by zero")
-			return
+			break
 		}
-		fmt.Println(float64(n1) / float64(n2))
+		fmt.Println(float64(a) / float64(b))
 	default:
 		fmt.Println("Invalid operation")
 	}
