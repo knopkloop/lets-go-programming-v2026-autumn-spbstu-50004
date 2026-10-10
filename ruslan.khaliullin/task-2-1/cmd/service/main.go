@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 const (
-	limitMin = 15
-	limitMax = 30
+	defMinTemperature = 15
+	defMaxTemperature = 30
 )
 
 type conditioner struct {
@@ -13,7 +13,7 @@ type conditioner struct {
 }
 
 func newConditioner() conditioner {
-	return conditioner{low: limitMin, high: limitMax}
+	return conditioner{low: defMinTemperature, high: defMaxTemperature}
 }
 
 func (c *conditioner) regulate(sign string, value int) int {
@@ -38,24 +38,27 @@ func (c *conditioner) regulate(sign string, value int) int {
 func main() {
 	var departments int
 	if _, err := fmt.Scan(&departments); err != nil {
+		fmt.Println("Invalid department number")
 		return
 	}
 
-	for d := 0; d < departments; d++ {
+	for range departments {
 		var employees int
 		if _, err := fmt.Scan(&employees); err != nil {
+			fmt.Println("Invalid employee number")
 			return
 		}
 
 		cond := newConditioner()
 
-		for i := 0; i < employees; i++ {
+		for range employees {
 			var (
 				sign  string
 				value int
 			)
 
 			if _, err := fmt.Scan(&sign, &value); err != nil {
+				fmt.Println("Invalid temperature constraint")
 				return
 			}
 
