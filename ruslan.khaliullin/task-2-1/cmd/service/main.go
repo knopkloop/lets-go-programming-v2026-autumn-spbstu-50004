@@ -39,6 +39,7 @@ func main() {
 	var departments int
 	if _, err := fmt.Scan(&departments); err != nil {
 		fmt.Println("Invalid department number")
+
 		return
 	}
 
@@ -46,6 +47,7 @@ func main() {
 		var employees int
 		if _, err := fmt.Scan(&employees); err != nil {
 			fmt.Println("Invalid employee number")
+
 			return
 		}
 
@@ -59,6 +61,7 @@ func main() {
 
 			if _, err := fmt.Scan(&sign, &value); err != nil {
 				fmt.Println("Invalid temperature constraint")
+
 				return
 			}
 
