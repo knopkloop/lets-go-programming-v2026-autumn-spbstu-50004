@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,7 +31,9 @@ type valute struct {
 }
 
 func Load(path string) ([]Currency, error) {
-	data, err := os.ReadFile(path)
+	safePath := filepath.Clean(path)
+
+	data, err := os.ReadFile(safePath)
 	if err != nil {
 		return nil, fmt.Errorf("read input file: %w", err)
 	}
@@ -45,12 +48,14 @@ func Load(path string) ([]Currency, error) {
 	}
 
 	rates := make([]Currency, 0, len(curs.Valutes))
+
 	for _, valuteItem := range curs.Valutes {
-		if valuteItem.NumCode == "" || valuteItem.CharCode == "" {
-			continue
+		numCodeStr := valuteItem.NumCode
+		if numCodeStr == "" {
+			numCodeStr = "0"
 		}
 
-		numCode, err := strconv.Atoi(valuteItem.NumCode)
+		numCode, err := strconv.Atoi(numCodeStr)
 		if err != nil {
 			return nil, fmt.Errorf("parse num code of %s: %w", valuteItem.CharCode, err)
 		}

@@ -38,11 +38,11 @@ func main() {
 func saveJSON(path string, rates []cbr.Currency) error {
 	data, err := json.MarshalIndent(rates, "", "    ")
 	if err != nil {
-		return err
+		return fmt.Errorf("marshal json: %w", err)
 	}
 
 	if err := os.MkdirAll(filepath.Dir(path), dirPermissions); err != nil {
-		return err
+		return fmt.Errorf("create output directory: %w", err)
 	}
 
 	if err := os.WriteFile(path, data, filePermissions); err != nil {
