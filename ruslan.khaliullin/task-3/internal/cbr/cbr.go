@@ -45,20 +45,24 @@ func Load(path string) ([]Currency, error) {
 	}
 
 	rates := make([]Currency, 0, len(curs.Valutes))
-	for _, v := range curs.Valutes {
-		numCode, err := strconv.Atoi(v.NumCode)
-		if err != nil {
-			return nil, fmt.Errorf("parse num code of %s: %w", v.CharCode, err)
+	for _, valuteItem := range curs.Valutes {
+		if valuteItem.NumCode == "" || valuteItem.CharCode == "" {
+			continue
 		}
 
-		value, err := strconv.ParseFloat(strings.Replace(v.Value, ",", ".", 1), 64)
+		numCode, err := strconv.Atoi(valuteItem.NumCode)
 		if err != nil {
-			return nil, fmt.Errorf("parse value of %s: %w", v.CharCode, err)
+			return nil, fmt.Errorf("parse num code of %s: %w", valuteItem.CharCode, err)
+		}
+
+		value, err := strconv.ParseFloat(strings.Replace(valuteItem.Value, ",", ".", 1), 64)
+		if err != nil {
+			return nil, fmt.Errorf("parse value of %s: %w", valuteItem.CharCode, err)
 		}
 
 		rates = append(rates, Currency{
 			NumCode:  numCode,
-			CharCode: v.CharCode,
+			CharCode: valuteItem.CharCode,
 			Value:    value,
 		})
 	}

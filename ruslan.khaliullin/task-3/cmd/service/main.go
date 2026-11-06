@@ -11,6 +11,11 @@ import (
 	"github.com/knopkloop/task-3/internal/config"
 )
 
+const (
+	filePermissions = 0o600
+	dirPermissions  = 0o755
+)
+
 func main() {
 	configPath := flag.String("config", "", "path to YAML configuration file")
 	flag.Parse()
@@ -36,9 +41,13 @@ func saveJSON(path string, rates []cbr.Currency) error {
 		return err
 	}
 
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), dirPermissions); err != nil {
 		return err
 	}
 
-	return os.WriteFile(path, data, 0o644)
+	if err := os.WriteFile(path, data, filePermissions); err != nil {
+		return fmt.Errorf("write output file: %w", err)
+	}
+
+	return nil
 }
