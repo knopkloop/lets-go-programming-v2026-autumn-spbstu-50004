@@ -1,13 +1,15 @@
 package cbr
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
-	"math"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	"golang.org/x/net/html/charset"
 )
 
 type Currency struct {
@@ -34,7 +36,11 @@ func Load(path string) ([]Currency, error) {
 	}
 
 	var curs valCurs
-	if err := xml.Unmarshal(data, &curs); err != nil {
+
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+	decoder.CharsetReader = charset.NewReaderLabel
+
+	if err := decoder.Decode(&curs); err != nil {
 		return nil, fmt.Errorf("parse input file: %w", err)
 	}
 
@@ -48,10 +54,6 @@ func Load(path string) ([]Currency, error) {
 		value, err := strconv.ParseFloat(strings.Replace(v.Value, ",", ".", 1), 64)
 		if err != nil {
 			return nil, fmt.Errorf("parse value of %s: %w", v.CharCode, err)
-		}
-
-		if math.IsNaN(value) || math.IsInf(value, 0) {
-			return nil, fmt.Errorf("value of %s is not a finite number", v.CharCode)
 		}
 
 		rates = append(rates, Currency{
