@@ -72,7 +72,7 @@ func Load(path string) ([]Currency, error) {
 		})
 	}
 
-	sort.Slice(rates, func(i, j int) bool {
+	sort.SliceStable(rates, func(i, j int) bool {
 		return rates[i].Value > rates[j].Value
 	})
 
