@@ -14,20 +14,59 @@ import (
 )
 
 type Currency struct {
-	NumCode  int     `json:"num_code"`
-	CharCode string  `json:"char_code"`
-	Value    float64 `json:"value"`
+	NumCode  xmlInt     `xml:"NumCode" json:"num_code"`
+	CharCode string     `xml:"CharCode" json:"char_code"`
+	Value    xmlFloat64 `xml:"Value" json:"value"`
+}
+
+type xmlInt int
+
+func (x *xmlInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var raw string
+	if err := d.DecodeElement(&raw, &start); err != nil {
+		return fmt.Errorf("decode xml int: %w", err)
+	}
+
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		*x = 0
+
+		return nil
+	}
+
+	val, err := strconv.Atoi(raw)
+	if err != nil {
+		return fmt.Errorf("parse num code %q: %w", raw, err)
+	}
+
+	*x = xmlInt(val)
+
+	return nil
+}
+
+type xmlFloat64 float64
+
+func (x *xmlFloat64) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var raw string
+	if err := d.DecodeElement(&raw, &start); err != nil {
+		return fmt.Errorf("decode xml float: %w", err)
+	}
+
+	raw = strings.Replace(strings.TrimSpace(raw), ",", ".", 1)
+
+	val, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		return fmt.Errorf("parse value %q: %w", raw, err)
+	}
+
+	*x = xmlFloat64(val)
+
+	return nil
 }
 
 type valCurs struct {
-	XMLName xml.Name `xml:"ValCurs"`
-	Valutes []valute `xml:"Valute"`
-}
-
-type valute struct {
-	NumCode  string `xml:"NumCode"`
-	CharCode string `xml:"CharCode"`
-	Value    string `xml:"Value"`
+	XMLName xml.Name   `xml:"ValCurs"`
+	Valutes []Currency `xml:"Valute"`
 }
 
 func Load(path string) ([]Currency, error) {
@@ -47,30 +86,7 @@ func Load(path string) ([]Currency, error) {
 		return nil, fmt.Errorf("parse input file: %w", err)
 	}
 
-	rates := make([]Currency, 0, len(curs.Valutes))
-
-	for _, valuteItem := range curs.Valutes {
-		numCodeStr := valuteItem.NumCode
-		if numCodeStr == "" {
-			numCodeStr = "0"
-		}
-
-		numCode, err := strconv.Atoi(numCodeStr)
-		if err != nil {
-			return nil, fmt.Errorf("parse num code of %s: %w", valuteItem.CharCode, err)
-		}
-
-		value, err := strconv.ParseFloat(strings.Replace(valuteItem.Value, ",", ".", 1), 64)
-		if err != nil {
-			return nil, fmt.Errorf("parse value of %s: %w", valuteItem.CharCode, err)
-		}
-
-		rates = append(rates, Currency{
-			NumCode:  numCode,
-			CharCode: valuteItem.CharCode,
-			Value:    value,
-		})
-	}
+	rates := curs.Valutes
 
 	sort.SliceStable(rates, func(i, j int) bool {
 		return rates[i].Value > rates[j].Value

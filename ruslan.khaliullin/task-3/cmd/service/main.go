@@ -12,12 +12,13 @@ import (
 )
 
 const (
-	filePermissions = 0o600
-	dirPermissions  = 0o755
+	defaultConfigPath = "config.yaml"
+	filePermissions   = 0o600
+	dirPermissions    = 0o755
 )
 
 func main() {
-	configPath := flag.String("config", "", "path to YAML configuration file")
+	configPath := flag.String("config", defaultConfigPath, "path to YAML configuration file")
 	flag.Parse()
 
 	cfg, err := config.Load(*configPath)
