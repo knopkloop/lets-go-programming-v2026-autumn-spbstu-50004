@@ -16,7 +16,7 @@ import (
 type Currency struct {
 	NumCode  xmlInt     `json:"num_code"  xml:"NumCode"`
 	CharCode string     `json:"char_code" xml:"CharCode"`
-	Value    xmlFloat64 `json:"value" 	  xml:"Value"`
+	Value    xmlFloat64 `json:"value"     xml:"Value"`
 }
 
 type xmlInt int
